@@ -33,9 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Validação das credenciais
         if (username === testCredentials.username && password === testCredentials.password) {
             showMessage('Login realizado com sucesso!', true);
-            // Simulação de redirecionamento após login
+            // Salva o usuário na sessão e redireciona
+            sessionStorage.setItem('username', username);
             setTimeout(() => {
-                alert('Você seria redirecionado para a página principal.');
+                window.location.href = 'hello.html';
             }, 1500);
         } else {
             showMessage('Usuário ou senha incorretos!', false);
