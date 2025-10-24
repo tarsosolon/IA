@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuários</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-item a {
+            display: block;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .menu-item a:hover, .menu-item a.active {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #dc3545;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #dc3545;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .submit-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #c82333;
+        }
+
+        .submit-btn:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="hello.html">
+                    <i>🏠</i>Início
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="active">
+                    <i>👥</i>Cadastro de Usuários
+                </a>
+            </li>
+        </ul>
+        <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
+            <p class="user-info" style="margin-bottom: 10px;">Usuário: <span id="username"></span></p>
+            <button class="logout-btn" onclick="logout()" style="width: 100%; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Sair</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>Cadastro de Usuários</h1>
+            <div class="success-message" id="successMessage">
+                Usuário cadastrado com sucesso!
+            </div>
+            <form id="userForm" onsubmit="return handleSubmit(event)">
+                <div class="form-group">
+                    <label for="cpf">CPF *</label>
+                    <input type="text" id="cpf" maxlength="14" required>
+                    <span class="error-message" id="cpfError"></span>
+                </div>
+                <div class="form-group">
+                    <label for="name">Nome Completo *</label>
+                    <input type="text" id="name" required>
+                    <span class="error-message" id="nameError"></span>
+                </div>
+                <div class="form-group">
+                    <label for="birthDate">Data de Nascimento *</label>
+                    <input type="date" id="birthDate" required>
+                    <span class="error-message" id="birthDateError"></span>
+                </div>
+                <div class="form-group">
+                    <label for="address">Endereço Completo *</label>
+                    <input type="text" id="address" required>
+                    <span class="error-message" id="addressError"></span>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefone de Contato *</label>
+                    <input type="text" id="phone" maxlength="15" required>
+                    <span class="error-message" id="phoneError"></span>
+                </div>
+                <button type="submit" class="submit-btn">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Verifica se o usuário está logado
+        window.onload = function() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('username').textContent = username;
+        };
+
+        // Função de logout
+        function logout() {
+            sessionStorage.removeItem('username');
+            window.location.href = 'index.html';
+        }
+
+        // Simulação de banco de dados (localStorage)
+        const usersDB = {
+            getUsers() {
+                return JSON.parse(localStorage.getItem('users') || '[]');
+            },
+            saveUser(user) {
+                const users = this.getUsers();
+                if (users.some(u => u.cpf === user.cpf)) {
+                    throw new Error('CPF já cadastrado');
+                }
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        };
+
+        // Máscara para CPF
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d{3})?(\d{3})?(\d{2})?/, function(_, p1, p2, p3, p4) {
+                    let result = p1;
+                    if (p2) result += '.' + p2;
+                    if (p3) result += '.' + p3;
+                    if (p4) result += '-' + p4;
+                    return result;
+                });
+                e.target.value = value;
+            }
+        });
+
+        // Máscara para telefone
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{2})(\d{4,5})?(\d{4})?/, function(_, p1, p2, p3) {
+                    let result = '(' + p1;
+                    if (p2) result += ') ' + p2;
+                    if (p3) result += '-' + p3;
+                    return result;
+                });
+                e.target.value = value;
+            }
+        });
+
+        // Validação de CPF
+        function validateCPF(cpf) {
+            cpf = cpf.replace(/[^\d]/g, '');
+            
+            if (cpf.length !== 11) return false;
+            
+            if (/^(\d)\1+$/.test(cpf)) return false;
+            
+            let sum = 0;
+            for (let i = 0; i < 9; i++) {
+                sum += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let rest = 11 - (sum % 11);
+            let digit1 = rest >= 10 ? 0 : rest;
+            
+            sum = 0;
+            for (let i = 0; i < 10; i++) {
+                sum += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            rest = 11 - (sum % 11);
+            let digit2 = rest >= 10 ? 0 : rest;
+            
+            return digit1 === parseInt(cpf.charAt(9)) && digit2 === parseInt(cpf.charAt(10));
+        }
+
+        // Validação do formulário
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const cpf = document.getElementById('cpf').value;
+            const name = document.getElementById('name').value;
+            const birthDate = document.getElementById('birthDate').value;
+            const address = document.getElementById('address').value;
+            const phone = document.getElementById('phone').value;
+            
+            // Limpa mensagens de erro anteriores
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            
+            // Validação do CPF
+            if (!validateCPF(cpf)) {
+                document.getElementById('cpfError').textContent = 'CPF inválido';
+                document.getElementById('cpfError').style.display = 'block';
+                return false;
+            }
+            
+            // Validação da data de nascimento
+            const birthDateObj = new Date(birthDate);
+            const today = new Date();
+            const age = today.getFullYear() - birthDateObj.getFullYear();
+            if (age < 18 || age > 120) {
+                document.getElementById('birthDateError').textContent = 'Idade deve ser entre 18 e 120 anos';
+                document.getElementById('birthDateError').style.display = 'block';
+                return false;
+            }
+            
+            // Validação do nome
+            if (name.trim().split(' ').length < 2) {
+                document.getElementById('nameError').textContent = 'Digite o nome completo';
+                document.getElementById('nameError').style.display = 'block';
+                return false;
+            }
+            
+            // Validação do telefone
+            if (phone.replace(/\D/g, '').length < 10) {
+                document.getElementById('phoneError').textContent = 'Telefone inválido';
+                document.getElementById('phoneError').style.display = 'block';
+                return false;
+            }
+            
+            try {
+                // Tenta salvar o usuário
+                usersDB.saveUser({
+                    cpf,
+                    name,
+                    birthDate,
+                    address,
+                    phone
+                });
+                
+                // Mostra mensagem de sucesso
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Limpa o formulário
+                event.target.reset();
+                
+                // Esconde a mensagem após 3 segundos
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+                
+            } catch (error) {
+                document.getElementById('cpfError').textContent = error.message;
+                document.getElementById('cpfError').style.display = 'block';
+                return false;
+            }
+            
+            return false;
+        }
+    </script>
+</body>
+</html>
