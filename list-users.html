@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-item a {
+            display: block;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .menu-item a:hover, .menu-item a.active {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #dc3545;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .pagination button:disabled {
+            background-color: #f8f9fa;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .pagination .current-page {
+            padding: 8px 12px;
+            font-weight: 600;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .records-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .format-cpf {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="hello.html">
+                    <i>🏠</i>Início
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="users.html">
+                    <i>👥</i>Cadastro de Usuários
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="active">
+                    <i>📋</i>Lista de Usuários
+                </a>
+            </li>
+        </ul>
+        <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
+            <p class="user-info" style="margin-bottom: 10px;">Usuário: <span id="username"></span></p>
+            <button class="logout-btn" onclick="logout()" style="width: 100%; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Sair</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="table-header">
+                <h1>Lista de Usuários</h1>
+                <div class="records-info">
+                    Mostrando <span id="showing-records">0</span> de <span id="total-records">0</span> registros
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>CPF</th>
+                            <th>Nome</th>
+                            <th>Data de Nascimento</th>
+                            <th>Endereço</th>
+                            <th>Telefone</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Dados serão inseridos aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Botões de paginação serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verifica se o usuário está logado
+        window.onload = function() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('username').textContent = username;
+            loadUsers(1);
+        };
+
+        // Função de logout
+        function logout() {
+            sessionStorage.removeItem('username');
+            window.location.href = 'index.html';
+        }
+
+        // Configurações de paginação
+        const ITEMS_PER_PAGE = 20;
+        let currentPage = 1;
+        let totalPages = 1;
+        let users = [];
+
+        // Formata a data para o padrão brasileiro
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        // Formata o CPF com pontos e traço
+        function formatCPF(cpf) {
+            return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        // Carrega os usuários do localStorage
+        function loadUsers(page) {
+            const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Ordena os usuários por nome
+            users = storedUsers.sort((a, b) => a.name.localeCompare(b.name));
+            
+            totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
+            currentPage = page;
+
+            // Atualiza as informações de registros
+            document.getElementById('total-records').textContent = users.length;
+            document.getElementById('showing-records').textContent = Math.min(page * ITEMS_PER_PAGE, users.length);
+
+            displayUsers();
+            updatePagination();
+        }
+
+        // Exibe os usuários na tabela
+        function displayUsers() {
+            const tableBody = document.getElementById('users-table-body');
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const paginatedUsers = users.slice(start, end);
+
+            if (users.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="no-data">Nenhum usuário cadastrado</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = paginatedUsers.map(user => `
+                <tr>
+                    <td class="format-cpf">${user.cpf}</td>
+                    <td>${user.name}</td>
+                    <td>${formatDate(user.birthDate)}</td>
+                    <td>${user.address}</td>
+                    <td>${user.phone}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Atualiza os botões de paginação
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            let buttons = '';
+
+            // Botão Anterior
+            buttons += `
+                <button onclick="loadUsers(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    Anterior
+                </button>
+            `;
+
+            // Informação da página atual
+            buttons += `<span class="current-page">Página ${currentPage} de ${totalPages || 1}</span>`;
+
+            // Botão Próximo
+            buttons += `
+                <button onclick="loadUsers(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>
+                    Próximo
+                </button>
+            `;
+
+            pagination.innerHTML = buttons;
+        }
+    </script>
+</body>
+</html>
